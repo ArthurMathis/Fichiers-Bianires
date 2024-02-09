@@ -35,18 +35,25 @@ void openFile(FILE **f, char *source, char *mode) {
  * @param size La dimension du tableau à lire
  */
 void ecritTab(FILE *f, char *dest, long *tab, unsigned *size) {
+    // On positionne notre curseur au début du fichier
     if (fseek(f, sizeof(unsigned), SEEK_SET)) {
+        // On retourne les potentielles erreurs d'accès au fichier
         fprintf(stderr, "Problème lors de l'ouverture du fichier %s", dest);
         exit(2);
     }
 
+    // On écrit sous forme d'un unsigned int la taille du tableau 
     if (fwrite(size, sizeof(unsigned), 1, f) == 0) {
+        // On retourne les potentielles erreurs d'écriture
         fprintf(stderr, "Erreur lors de l'écriture de la dimension du fichier %s", dest);
         exit(3);
     }
 
+    // On fait défiler le tableau
     for (unsigned i = 0; i < *size; i++) {
+        // On écrit chaque case sous forme d'un long int
         if (fwrite(&tab[i], sizeof(long), 1, f) == 0) {
+            // On retourne les potentielles erreurs d'écriture
             fprintf(stderr, "Erreur lors de l'écriture de la case %u : %ld", i, tab[i]);
             exit(3);
         }
@@ -61,19 +68,27 @@ void ecritTab(FILE *f, char *dest, long *tab, unsigned *size) {
  * @param size La dimension du tableau à implémnter
  */
 void litTab(FILE *f, char *source, long **tab, unsigned *size) {
+    // On positionne notre curseur au début du fichier
     if (fseek(f, sizeof(unsigned), SEEK_SET)) {
+        // On retourne les potentielles erreurs d'accès au fichier
         fprintf(stderr, "Problème lors de l'ouverture du fichier %s", source);
         exit(2);
     }
 
+    // On lit dans le format unsigned int la dimension du tableau 
     if (fread(size, sizeof(unsigned), 1, f) == 0) {
+        // On retourne les potentielles erreurs de lecture
         fprintf(stderr, "Erreur lors de la lecture de la dimension du fichier %s", source);
         exit(3);
     }
 
+    // On alloue dynamiquement la mémoire nécessaires pour les éléments de type long int 
     *tab = malloc(*size * sizeof(long));
+    // On fait défiler les données du fichiers par groupe de taille long int
     for (unsigned i = 0; i < *size; i++) {
+        // On lit les données et les impélemente dans chaque case du tableau
         if (fread(&(*tab)[i], sizeof(long), 1, f) == 0) {
+            // On retourne les potentielles erreurs de lecture
             fprintf(stderr, "Erreur lors de la lecture de la case %u : %ld", i, (*tab)[i]);
             exit(3);
         }
